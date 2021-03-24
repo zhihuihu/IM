@@ -1,0 +1,5 @@
+server:
+  port: 5210
+spring:
+  application:
+    name: im-server-prod

@@ -1,0 +1,17 @@
+server:
+  port: 5200
+spring:
+  application:
+    name: im-server-prod
+
+im:
+  zk:
+    register: true
+    addr: 127.0.0.1:2181
+    connect-timeout: 15000
+    root: /im/route
+  server:
+    ip: 127.0.0.1
+    socket-port: 12000
+    websocket-port: 12010
+    heartbeat-time: 30
