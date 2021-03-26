@@ -16,7 +16,7 @@ spring:
     password: im123
   data:
     mongodb:
-      uri: mongodb://im:im123@192.168.8.11:27017/im
+      uri: mongodb://im:im123@192.168.137.100:27017/im
 
 im:
   zk:

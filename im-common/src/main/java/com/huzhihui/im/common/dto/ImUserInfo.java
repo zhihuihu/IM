@@ -19,6 +19,8 @@ public class ImUserInfo implements Serializable {
     private String userName;
     /** 用户中文名 */
     private String userCname;
+    /** 服务器 */
+    private String server;
 
     public String getUserId() {
         return userId;
@@ -42,5 +44,13 @@ public class ImUserInfo implements Serializable {
 
     public void setUserCname(String userCname) {
         this.userCname = userCname;
+    }
+
+    public String getServer() {
+        return server;
+    }
+
+    public void setServer(String server) {
+        this.server = server;
     }
 }
