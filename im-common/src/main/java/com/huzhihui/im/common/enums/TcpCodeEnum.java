@@ -8,7 +8,8 @@ package com.huzhihui.im.common.enums;
 public enum TcpCodeEnum {
 
     SUCCESS(1000,"操作成功"),
-    ERROR(5000,"服务异常");
+    ERROR(5000,"服务异常"),
+
     ;
 
     private int code;

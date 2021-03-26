@@ -4,9 +4,18 @@
  */
 package com.huzhihui.im.server.handler.socket;
 
+import com.alibaba.fastjson.JSON;
+import com.huzhihui.im.common.dto.ImUserInfo;
+import com.huzhihui.im.common.dto.TransferMsg;
+import com.huzhihui.im.common.dto.msg.LoginMessage;
+import com.huzhihui.im.common.enums.TcpCommandTypeEnum;
+import com.huzhihui.im.server.utils.NettyAttrUtil;
+import com.huzhihui.im.server.utils.SessionSocketUtils;
+import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 import org.slf4j.Logger;
@@ -38,7 +47,32 @@ public class SocketServerHandler extends SimpleChannelInboundHandler<String> {
 
     @Override
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, String s) throws Exception {
+        TransferMsg transferMsg = JSON.parseObject(s,TransferMsg.class);
+        if(transferMsg.getCommandType() == TcpCommandTypeEnum.LOGIN.getCode()){
+            // 如果是登录
+            LoginMessage loginMessage = transferMsg.getLoginMessage();
+            ImUserInfo imUserInfo = new ImUserInfo();
+            imUserInfo.setUserId(loginMessage.getUserId());
+            imUserInfo.setUserName(loginMessage.getUserName());
+            imUserInfo.setUserCname(loginMessage.getUserCname());
+            SessionSocketUtils.setImUserInfoSession(loginMessage.getUserId(),imUserInfo);
+            SessionSocketUtils.setNioSocketChannelSession(loginMessage.getUserId(),(NioSocketChannel) channelHandlerContext.channel());
+        }else if(transferMsg.getCommandType() == TcpCommandTypeEnum.MSG.getCode()){
+            // 消息
 
+        }else if(transferMsg.getCommandType() == TcpCommandTypeEnum.PING.getCode()){
+            // 如果是PING消息
+            NettyAttrUtil.updateReaderTime(channelHandlerContext.channel(),System.currentTimeMillis());
+            //向客户端响应 pong 消息
+            TransferMsg transferMsgPong = new TransferMsg();
+            transferMsgPong.setCommandType(TcpCommandTypeEnum.PING.getCode());
+            channelHandlerContext.writeAndFlush(JSON.toJSONString(transferMsgPong)).addListeners((ChannelFutureListener) future -> {
+                if (!future.isSuccess()) {
+                    log.error("IO error,close Channel");
+                    future.channel().close();
+                }
+            }) ;
+        }
     }
 
     @Override

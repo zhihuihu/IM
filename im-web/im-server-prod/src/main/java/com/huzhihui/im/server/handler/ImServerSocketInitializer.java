@@ -19,11 +19,8 @@ import io.netty.handler.timeout.IdleStateHandler;
  */
 public class ImServerSocketInitializer extends ChannelInitializer<Channel> {
 
-    private SocketServerHandler socketServerHandler;
+    private final SocketServerHandler socketServerHandler = new SocketServerHandler();
 
-    public ImServerSocketInitializer(SocketServerHandler socketServerHandler) {
-        this.socketServerHandler = socketServerHandler;
-    }
 
     @Override
     protected void initChannel(Channel channel) throws Exception {

@@ -8,7 +8,8 @@ package com.huzhihui.im.common.enums;
 public enum HttpCodeEnum {
 
     SUCCESS(1000,"操作成功"),
-    ERROR(5000,"服务异常");
+    ERROR(5000,"服务异常"),
+    SERVER_NOT_AVAILABLE(5001,"im 服务未找到"),
     ;
 
     private int code;

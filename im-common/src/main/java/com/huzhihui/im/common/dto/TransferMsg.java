@@ -6,6 +6,7 @@ package com.huzhihui.im.common.dto;
 
 
 import com.huzhihui.im.common.dto.msg.GroupImMessage;
+import com.huzhihui.im.common.dto.msg.LoginMessage;
 import com.huzhihui.im.common.dto.msg.P2pImMessage;
 import com.huzhihui.im.common.dto.msg.PlatformImMessage;
 
@@ -22,6 +23,8 @@ public class TransferMsg implements Serializable {
     private int commandType;
     /** 消息类型 {@link com.huzhihui.im.common.enums.MessageTypeEnum} */
     private int messageType;
+    /** 登录 */
+    private LoginMessage loginMessage;
     /** 单聊 */
     private P2pImMessage p2pImMessage;
     /** 群聊 */
@@ -67,5 +70,13 @@ public class TransferMsg implements Serializable {
 
     public void setPlatformImMessage(PlatformImMessage platformImMessage) {
         this.platformImMessage = platformImMessage;
+    }
+
+    public LoginMessage getLoginMessage() {
+        return loginMessage;
+    }
+
+    public void setLoginMessage(LoginMessage loginMessage) {
+        this.loginMessage = loginMessage;
     }
 }
