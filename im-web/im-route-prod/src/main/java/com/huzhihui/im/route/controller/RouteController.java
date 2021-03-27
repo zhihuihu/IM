@@ -4,13 +4,16 @@
  */
 package com.huzhihui.im.route.controller;
 
+import com.alibaba.fastjson.JSON;
+import com.huzhihui.im.common.constant.RedisConstant;
+import com.huzhihui.im.common.dto.ImUserInfo;
 import com.huzhihui.im.common.utils.ResponseMessage;
-import com.huzhihui.im.handler.RedisHandler;
 import com.huzhihui.im.mongo.entity.User;
 import com.huzhihui.im.route.algorithm.inter.RouteHandle;
 import com.huzhihui.im.route.cache.ServerCache;
 import com.huzhihui.im.route.dto.req.LoginReq;
 import com.huzhihui.im.route.dto.res.LoginRes;
+import com.huzhihui.im.route.handler.RedisHandler;
 import com.huzhihui.im.service.inter.UserService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,12 +78,25 @@ public class RouteController {
         if(StringUtils.isEmpty(loginReq.getPassword()) || !loginReq.getPassword().equals(user.getPassword())){
             return ResponseMessage.failure("用户或密码错误");
         }
+        String oldToken = redisHandler.getHashValue(RedisConstant.TOKEN_PRE,user.getId());
+        if(StringUtils.isNotEmpty(oldToken)){
+            // 清除以前的token并发送给IM服务器强制离线消息
+            redisHandler.removeHash(RedisConstant.TOKEN_PRE,user.getId());
+            redisHandler.remove(RedisConstant.USER_PRE+oldToken);
+        }
         String server = routeHandle.routeServer(serverCache.getServerList(),user.getId());
         String token = UUID.randomUUID().toString().replace("-","");
         LoginRes loginRes = new LoginRes();
         loginRes.setToken(token);
         loginRes.setServer(server);
         // 保存信息到redis
+        ImUserInfo imUserInfo = new ImUserInfo();
+        imUserInfo.setUserId(user.getId());
+        imUserInfo.setUserName(user.getUserName());
+        imUserInfo.setUserCname(user.getUserCname());
+        imUserInfo.setServer(server);
+        redisHandler.cacheHashValue(RedisConstant.TOKEN_PRE,user.getId(),token);
+        redisHandler.cacheValue(RedisConstant.USER_PRE+token, JSON.toJSONString(imUserInfo));
         return ResponseMessage.success(loginRes);
     }
 }

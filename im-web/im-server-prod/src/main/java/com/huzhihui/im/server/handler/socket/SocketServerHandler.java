@@ -9,8 +9,10 @@ import com.huzhihui.im.common.dto.ImUserInfo;
 import com.huzhihui.im.common.dto.TransferMsg;
 import com.huzhihui.im.common.dto.msg.LoginMessage;
 import com.huzhihui.im.common.enums.TcpCommandTypeEnum;
+import com.huzhihui.im.server.handler.RedisHandler;
 import com.huzhihui.im.server.utils.NettyAttrUtil;
 import com.huzhihui.im.server.utils.SessionSocketUtils;
+import com.huzhihui.im.server.utils.SpringBeanUtils;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -18,6 +20,7 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,12 +54,14 @@ public class SocketServerHandler extends SimpleChannelInboundHandler<String> {
         if(transferMsg.getCommandType() == TcpCommandTypeEnum.LOGIN.getCode()){
             // 如果是登录
             LoginMessage loginMessage = transferMsg.getLoginMessage();
-            ImUserInfo imUserInfo = new ImUserInfo();
-            imUserInfo.setUserId(loginMessage.getUserId());
-            imUserInfo.setUserName(loginMessage.getUserName());
-            imUserInfo.setUserCname(loginMessage.getUserCname());
-            SessionSocketUtils.setImUserInfoSession(loginMessage.getUserId(),imUserInfo);
-            SessionSocketUtils.setNioSocketChannelSession(loginMessage.getUserId(),(NioSocketChannel) channelHandlerContext.channel());
+            RedisHandler redisHandler = SpringBeanUtils.getBean("redisHandler",RedisHandler.class);
+            String userInfoStr = redisHandler.getValue(loginMessage.getToken());
+            if(StringUtils.isEmpty(userInfoStr)){
+                channelHandlerContext.channel().close();
+            }
+            ImUserInfo imUserInfo = JSON.parseObject(userInfoStr,ImUserInfo.class);
+            SessionSocketUtils.setImUserInfoSession(imUserInfo.getUserId(),imUserInfo);
+            SessionSocketUtils.setNioSocketChannelSession(imUserInfo.getUserId(),(NioSocketChannel) channelHandlerContext.channel());
         }else if(transferMsg.getCommandType() == TcpCommandTypeEnum.MSG.getCode()){
             // 消息
 

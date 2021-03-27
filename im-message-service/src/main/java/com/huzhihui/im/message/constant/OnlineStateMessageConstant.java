@@ -1,0 +1,24 @@
+/**
+ * zhihuihu.github.io.
+ * Copyright (c) 2016-2019 All Rights Reserved.
+ */
+package com.huzhihui.im.message.constant;
+
+/**
+ * 在线状态常量配置类
+ * @author huzhi
+ * @version $ v 0.1 2021/3/27 20:26 huzhi Exp $$
+ */
+public class OnlineStateMessageConstant {
+
+    /** 交换机 */
+    public static final String EXCHANGE_NAME = "im.onlineStateMessageExchange";
+    /** 队列名称 */
+    public static final String QUEUE_NAME = "im.onlineStateMessageQueue";
+    /** 路由键值 */
+    public static final String QUEUE_ROUTE_KEY = QUEUE_NAME;
+    /** 生产者名称 */
+    public static final String PRODUCER_NAME = "onlineStateMessageProducer";
+
+
+}

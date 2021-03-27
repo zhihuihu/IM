@@ -6,6 +6,7 @@
 		<module>im-common</module>
 		<module>im-web</module>
 		<module>im-service</module>
+		<module>im-message-service</module>
 	</modules>
 	<parent>
 		<groupId>org.springframework.boot</groupId>

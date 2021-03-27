@@ -12,34 +12,14 @@ package com.huzhihui.im.common.dto.msg;
  */
 public class LoginMessage extends BaseImMessage {
 
-    /** 用户ID */
-    private String userId;
-    /** 用户名 */
-    private String userName;
-    /** 用户中文名 */
-    private String userCname;
+    /** 只需要token即可 */
+    private String token;
 
-    public String getUserId() {
-        return userId;
+    public String getToken() {
+        return token;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    public String getUserCname() {
-        return userCname;
-    }
-
-    public void setUserCname(String userCname) {
-        this.userCname = userCname;
+    public void setToken(String token) {
+        this.token = token;
     }
 }

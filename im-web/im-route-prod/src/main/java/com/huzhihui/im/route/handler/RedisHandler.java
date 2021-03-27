@@ -2,7 +2,7 @@
  * zhihuihu.github.io.
  * Copyright (c) 2016-2019 All Rights Reserved.
  */
-package com.huzhihui.im.handler;
+package com.huzhihui.im.route.handler;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
