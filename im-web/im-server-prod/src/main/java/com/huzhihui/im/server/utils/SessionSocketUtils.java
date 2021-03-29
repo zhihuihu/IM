@@ -40,6 +40,22 @@ public class SessionSocketUtils {
     }
 
     /**
+     * 通过通道获取用户信息
+     * @param nioSocketChannel
+     * @return
+     */
+    public static ImUserInfo getImUserInfoSession(NioSocketChannel nioSocketChannel){
+        for (Map.Entry<String, NioSocketChannel> entry : CHANNEL_MAP.entrySet()) {
+            NioSocketChannel value = entry.getValue();
+            if (nioSocketChannel == value){
+                String key = entry.getKey();
+                return SESSION_MAP.get(key);
+            }
+        }
+        return null;
+    }
+
+    /**
      * 获取nio通道信息
      * @param userId
      * @return
@@ -56,7 +72,7 @@ public class SessionSocketUtils {
         SESSION_MAP.remove(userId);
     }
 
-    public static ImUserInfo getInUserInfoSession(String userId){
+    public static ImUserInfo getImUserInfoSession(String userId){
         return SESSION_MAP.get(userId);
     }
 }

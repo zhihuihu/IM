@@ -9,6 +9,8 @@ import com.huzhihui.im.common.dto.ImUserInfo;
 import com.huzhihui.im.common.dto.TransferMsg;
 import com.huzhihui.im.common.dto.msg.LoginMessage;
 import com.huzhihui.im.common.enums.TcpCommandTypeEnum;
+import com.huzhihui.im.server.handler.HeartBeatHandler;
+import com.huzhihui.im.server.handler.OnlineHandler;
 import com.huzhihui.im.server.handler.RedisHandler;
 import com.huzhihui.im.server.utils.NettyAttrUtil;
 import com.huzhihui.im.server.utils.SessionSocketUtils;
@@ -42,6 +44,8 @@ public class SocketServerHandler extends SimpleChannelInboundHandler<String> {
 
                 log.info("定时检测客户端端是否存活");
 
+                HeartBeatHandler heartBeatHandler = SpringBeanUtils.getBean(HeartBeatHandler.class);
+                heartBeatHandler.process(ctx);
             }
         }
         super.userEventTriggered(ctx, evt);
@@ -60,8 +64,9 @@ public class SocketServerHandler extends SimpleChannelInboundHandler<String> {
                 channelHandlerContext.channel().close();
             }
             ImUserInfo imUserInfo = JSON.parseObject(userInfoStr,ImUserInfo.class);
-            SessionSocketUtils.setImUserInfoSession(imUserInfo.getUserId(),imUserInfo);
-            SessionSocketUtils.setNioSocketChannelSession(imUserInfo.getUserId(),(NioSocketChannel) channelHandlerContext.channel());
+            OnlineHandler onlineHandler = SpringBeanUtils.getBean(OnlineHandler.class);
+            onlineHandler.online(imUserInfo,(NioSocketChannel) channelHandlerContext.channel());
+
         }else if(transferMsg.getCommandType() == TcpCommandTypeEnum.MSG.getCode()){
             // 消息
 
@@ -82,7 +87,12 @@ public class SocketServerHandler extends SimpleChannelInboundHandler<String> {
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        super.channelInactive(ctx);
+        ImUserInfo imUserInfo = SessionSocketUtils.getImUserInfoSession((NioSocketChannel) ctx.channel());
+        if(imUserInfo != null){
+            OnlineHandler onlineHandler = SpringBeanUtils.getBean(OnlineHandler.class);
+            onlineHandler.offline(imUserInfo,(NioSocketChannel) ctx.channel());
+            ctx.channel().close();
+        }
     }
 
     @Override

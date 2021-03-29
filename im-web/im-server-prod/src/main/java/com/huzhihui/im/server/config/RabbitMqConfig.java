@@ -4,6 +4,7 @@
  */
 package com.huzhihui.im.server.config;
 
+import com.huzhihui.im.message.config.KickOutMessageConfig;
 import com.huzhihui.im.message.config.OnlineStateMessageConfig;
 import com.huzhihui.im.message.config.SendMessageConfig;
 import com.huzhihui.im.message.config.SendStateMessageConfig;
@@ -25,7 +26,8 @@ import org.springframework.context.annotation.Configuration;
 @ImportAutoConfiguration(value = {
         OnlineStateMessageConfig.class,
         SendMessageConfig.class,
-        SendStateMessageConfig.class
+        SendStateMessageConfig.class,
+        KickOutMessageConfig.class
 })
 public class RabbitMqConfig {
 
