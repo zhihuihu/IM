@@ -35,12 +35,12 @@ public class HeartBeatHandler {
 
         Long lastReadTime = NettyAttrUtil.getReaderTime(ctx.channel());
         long now = System.currentTimeMillis();
-        if (lastReadTime != null && now - lastReadTime > heartBeatTime){
+        if (null == lastReadTime  || (lastReadTime != null && now - lastReadTime > heartBeatTime)){
             ImUserInfo imUserInfo = SessionSocketUtils.getImUserInfoSession((NioSocketChannel) ctx.channel());
             if (imUserInfo != null){
                 log.warn("客户端[{}]心跳超时[{}]ms，需要关闭连接!",imUserInfo.getUserName(),now - lastReadTime);
+                onlineHandler.offline(imUserInfo,(NioSocketChannel) ctx.channel());
             }
-            onlineHandler.offline(imUserInfo,(NioSocketChannel) ctx.channel());
             ctx.channel().close();
         }
     }

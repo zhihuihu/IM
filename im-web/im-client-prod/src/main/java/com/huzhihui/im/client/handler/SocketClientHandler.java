@@ -63,6 +63,7 @@ public class SocketClientHandler extends SimpleChannelInboundHandler<String> {
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        log.info("断线");
         super.channelInactive(ctx);
     }
 

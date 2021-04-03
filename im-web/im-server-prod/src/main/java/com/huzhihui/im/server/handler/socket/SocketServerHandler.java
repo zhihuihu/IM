@@ -67,7 +67,7 @@ public class SocketServerHandler extends SimpleChannelInboundHandler<String> {
             ImUserInfo imUserInfo = JSON.parseObject(userInfoStr,ImUserInfo.class);
             OnlineHandler onlineHandler = SpringBeanUtils.getBean(OnlineHandler.class);
             onlineHandler.online(imUserInfo,(NioSocketChannel) channelHandlerContext.channel());
-
+            NettyAttrUtil.updateReaderTime(channelHandlerContext.channel(),System.currentTimeMillis());
         }else if(transferMsg.getCommandType() == TcpCommandTypeEnum.MSG.getCode()){
             // 消息
 
