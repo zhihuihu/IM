@@ -5,6 +5,7 @@
 package com.huzhihui.im.server.handler.socket;
 
 import com.alibaba.fastjson.JSON;
+import com.huzhihui.im.common.constant.RedisConstant;
 import com.huzhihui.im.common.dto.ImUserInfo;
 import com.huzhihui.im.common.dto.TransferMsg;
 import com.huzhihui.im.common.dto.msg.LoginMessage;
@@ -59,7 +60,7 @@ public class SocketServerHandler extends SimpleChannelInboundHandler<String> {
             // 如果是登录
             LoginMessage loginMessage = transferMsg.getLoginMessage();
             RedisHandler redisHandler = SpringBeanUtils.getBean("redisHandler",RedisHandler.class);
-            String userInfoStr = redisHandler.getValue(loginMessage.getToken());
+            String userInfoStr = redisHandler.getValue(RedisConstant.USER_PRE+loginMessage.getToken());
             if(StringUtils.isEmpty(userInfoStr)){
                 channelHandlerContext.channel().close();
             }

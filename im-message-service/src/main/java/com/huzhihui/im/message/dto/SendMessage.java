@@ -15,6 +15,8 @@ public class SendMessage extends AbstractMessage {
     private String sendMessageId;
     /** 接收人 */
     private String toUserId;
+    /** 消息类型 {@link com.huzhihui.im.common.enums.MessageTypeEnum} */
+    private int messageType;
     /** 消息内容 */
     private String message;
 
@@ -32,6 +34,14 @@ public class SendMessage extends AbstractMessage {
 
     public void setToUserId(String toUserId) {
         this.toUserId = toUserId;
+    }
+
+    public int getMessageType() {
+        return messageType;
+    }
+
+    public void setMessageType(int messageType) {
+        this.messageType = messageType;
     }
 
     public String getMessage() {

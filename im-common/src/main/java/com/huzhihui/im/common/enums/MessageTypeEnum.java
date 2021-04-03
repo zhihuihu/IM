@@ -7,9 +7,9 @@ package com.huzhihui.im.common.enums;
  */
 public enum MessageTypeEnum {
 
-    LOGIN(1,"登录"),
-    MSG(2,"业务消息"),
-    PING(3,"ping");
+    P2P(1,"单聊"),
+    GROUP(2,"群聊"),
+    PLATFORM(3,"平台通知");
     ;
 
     private int code;

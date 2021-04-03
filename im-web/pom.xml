@@ -15,6 +15,7 @@
 	<modules>
 		<module>im-server-prod</module>
 		<module>im-route-prod</module>
+		<module>im-client-prod</module>
 	</modules>
 
 

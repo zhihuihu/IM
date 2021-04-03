@@ -4,10 +4,19 @@
  */
 package com.huzhihui.im.server.message.consumer;
 
+import com.alibaba.fastjson.JSON;
+import com.huzhihui.im.common.dto.TransferMsg;
+import com.huzhihui.im.common.dto.msg.GroupImMessage;
+import com.huzhihui.im.common.dto.msg.P2pImMessage;
+import com.huzhihui.im.common.dto.msg.PlatformImMessage;
+import com.huzhihui.im.common.enums.MessageTypeEnum;
+import com.huzhihui.im.common.enums.TcpCommandTypeEnum;
 import com.huzhihui.im.message.constant.SendMessageConstant;
 import com.huzhihui.im.message.dto.SendMessage;
 import com.huzhihui.im.server.config.RabbitMqConfig;
 import com.huzhihui.im.server.utils.SessionSocketUtils;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,9 +37,28 @@ public class SendMessageConsumer {
 
     @RabbitHandler
     public void consume(SendMessage sendMessage){
-        NioSocketChannel socketChannel = SessionSocketUtils.getNioSocketChannelSession(sendMessage.getToUserId());
-        if(null != socketChannel){
-
+        try{
+            NioSocketChannel socketChannel = SessionSocketUtils.getNioSocketChannelSession(sendMessage.getToUserId());
+            if(null != socketChannel){
+                TransferMsg transferMsg = new TransferMsg();
+                transferMsg.setMessageType(sendMessage.getMessageType());
+                transferMsg.setCommandType(TcpCommandTypeEnum.MSG.getCode());
+                if(MessageTypeEnum.P2P.getCode() == sendMessage.getMessageType()){
+                    P2pImMessage p2pImMessage = JSON.parseObject(sendMessage.getMessage(),P2pImMessage.class);
+                    transferMsg.setP2pImMessage(p2pImMessage);
+                }else if(MessageTypeEnum.GROUP.getCode() == sendMessage.getMessageType()){
+                    GroupImMessage groupImMessage = JSON.parseObject(sendMessage.getMessage(),GroupImMessage.class);
+                    transferMsg.setGroupImMessage(groupImMessage);
+                }else if(MessageTypeEnum.PLATFORM.getCode() == sendMessage.getMessageType()){
+                    PlatformImMessage platformImMessage = JSON.parseObject(sendMessage.getMessage(),PlatformImMessage.class);
+                    transferMsg.setPlatformImMessage(platformImMessage);
+                }
+                ChannelFuture future = socketChannel.writeAndFlush(JSON.toJSONString(transferMsg));
+                future.addListener((ChannelFutureListener) channelFuture ->
+                        log.info("server push msg:[{}]", JSON.toJSONString(transferMsg)));
+            }
+        }catch (Exception ex){
+            log.error("失败",ex);
         }
     }
 }
